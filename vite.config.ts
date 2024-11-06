@@ -4,6 +4,7 @@ import { defineConfig, type ViteDevServer } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { optimizeCssModules } from 'vite-plugin-optimize-css-modules';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { remixDevTools } from 'remix-development-tools';
 
 export default defineConfig((config) => {
   return {
@@ -11,6 +12,7 @@ export default defineConfig((config) => {
       target: 'esnext',
     },
     plugins: [
+      remixDevTools(),
       nodePolyfills({
         include: ['path', 'buffer'],
       }),
@@ -27,7 +29,7 @@ export default defineConfig((config) => {
       chrome129IssuePlugin(),
       config.mode === 'production' && optimizeCssModules({ apply: 'build' }),
     ],
-    envPrefix:["VITE_","OPENAI_LIKE_API_","OLLAMA_API_BASE_URL"],
+    envPrefix: ['VITE_', 'OPENAI_LIKE_API_', 'OLLAMA_API_BASE_URL'],
     css: {
       preprocessorOptions: {
         scss: {
