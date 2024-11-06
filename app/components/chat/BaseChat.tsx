@@ -5,12 +5,14 @@ import { Menu } from '~/components/sidebar/Menu.client';
 import { IconButton } from '~/components/ui/IconButton';
 import { Workbench } from '~/components/workbench/Workbench.client';
 import { classNames } from '~/utils/classNames';
-import { MODEL_LIST, DEFAULT_PROVIDER } from '~/utils/constants';
 import { Messages } from './Messages.client';
 import { SendButton } from './SendButton.client';
 import { useState } from 'react';
 
 import styles from './BaseChat.module.scss';
+
+import slingshotConfig from '~/config/slingshot.config';
+import { RenderIf } from '~/components/common/render-if';
 
 const EXAMPLE_PROMPTS = [
   { text: 'Build a todo app in React using Tailwind' },
@@ -20,54 +22,49 @@ const EXAMPLE_PROMPTS = [
   { text: 'How do I center a div?' },
 ];
 
-const providerList = [...new Set(MODEL_LIST.map((model) => model.provider))];
-
 interface ModelSelectorProps {
   model: string;
   setModel: (model: string) => void;
-  modelList: typeof MODEL_LIST;
-  providerList: string[];
 }
 
-const ModelSelector = ({ model, setModel, modelList, providerList }: ModelSelectorProps) => {
-  const [provider, setProvider] = useState(DEFAULT_PROVIDER);
+const ModelSelector = ({ model, setModel }: ModelSelectorProps) => {
+  const providerList = Object.keys(slingshotConfig.modelConfig);
+  const [provider, setProvider] = useState<typeof slingshotConfig.default.provider>(slingshotConfig.default.provider);
+
   return (
-    <div className="flex flex-col mb-2 space-y-2">
-      <select
-        value={provider}
-        onChange={(e) => {
-          setProvider(e.target.value);
-          const firstModel = [...modelList].find((m) => m.provider == e.target.value);
-          setModel(firstModel ? firstModel.name : '');
-        }}
-        className="w-full p-2 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary focus:outline-none"
-      >
-        {providerList.map((provider) => (
-          <option key={provider} value={provider}>
-            {provider}
-          </option>
-        ))}
-        <option key="Ollama" value="Ollama">
-          Ollama
-        </option>
-        <option key="OpenAILike" value="OpenAILike">
-          OpenAILike
-        </option>
-      </select>
-      <select
-        value={model}
-        onChange={(e) => setModel(e.target.value)}
-        className="w-full p-2 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary focus:outline-none"
-      >
-        {[...modelList]
-          .filter((e) => e.provider == provider && e.name)
-          .map((modelOption) => (
-            <option key={modelOption.name} value={modelOption.name}>
-              {modelOption.label}
+    <RenderIf condition={providerList.length > 1}>
+      <div className="flex flex-col mb-2 space-y-2">
+        <select
+          value={provider}
+          onChange={(e) => {
+            setProvider(e.target.value as typeof slingshotConfig.default.provider);
+
+            const firstModel = slingshotConfig.modelConfig[provider].models.find((m) => m.modelName == e.target.value);
+            setModel(firstModel?.modelName ?? '');
+          }}
+          className="w-full p-2 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary focus:outline-none"
+        >
+          {providerList.map((provider) => (
+            <option key={provider} value={provider}>
+              {provider}
             </option>
           ))}
-      </select>
-    </div>
+        </select>
+        <RenderIf condition={!!model}>
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            className="w-full p-2 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary focus:outline-none"
+          >
+            {slingshotConfig.modelConfig[provider].models.map((modelOption) => (
+              <option key={modelOption.modelName} value={modelOption.modelName}>
+                {modelOption.modelLabel}
+              </option>
+            ))}
+          </select>
+        </RenderIf>
+      </div>
+    </RenderIf>
   );
 };
 
@@ -160,7 +157,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   'sticky bottom-0': chatStarted,
                 })}
               >
-                <ModelSelector model={model} setModel={setModel} modelList={MODEL_LIST} providerList={providerList} />
+                <ModelSelector model={model} setModel={setModel} />
                 <div
                   className={classNames(
                     'shadow-sm border border-bolt-elements-borderColor bg-bolt-elements-prompt-background backdrop-filter backdrop-blur-[8px] rounded-lg overflow-hidden',

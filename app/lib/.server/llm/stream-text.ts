@@ -1,10 +1,9 @@
-// @ts-nocheck
-// Preventing TS checks with files presented in the video for a better presentation.
-import { streamText as _streamText, convertToCoreMessages } from 'ai';
+import { streamText as _streamText, convertToCoreMessages, type LanguageModelV1 } from 'ai';
 import { getModel } from '~/lib/.server/llm/model';
 import { MAX_TOKENS } from './constants';
 import { getSystemPrompt } from './prompts';
-import { MODEL_LIST, DEFAULT_MODEL, DEFAULT_PROVIDER } from '~/utils/constants';
+import slingshotConfig from '~/config/slingshot.config';
+import { getProviderForModel } from '~/utils/modal.utils';
 
 interface ToolResult<Name extends string, Args, Result> {
   toolCallId: string;
@@ -31,36 +30,39 @@ function extractModelFromMessage(message: Message): { model: string; content: st
   if (match) {
     const model = match[1];
     const content = message.content.replace(modelRegex, '');
+
     return { model, content };
   }
 
-  // Default model if not specified
-  return { model: DEFAULT_MODEL, content: message.content };
+  return { model: slingshotConfig.default.model, content: message.content };
 }
 
 export function streamText(messages: Messages, env: Env, options?: StreamingOptions) {
-  let currentModel = DEFAULT_MODEL;
+  let currentModel = slingshotConfig.default.model;
   const processedMessages = messages.map((message) => {
     if (message.role === 'user') {
       const { model, content } = extractModelFromMessage(message);
-      if (model && MODEL_LIST.find((m) => m.name === model)) {
-        currentModel = model; // Update the current model
+
+      if (
+        model &&
+        slingshotConfig.modelConfig[slingshotConfig.default.provider].models.find((m) => m.modelName === model)
+      ) {
+        currentModel = model;
       }
+
       return { ...message, content };
     }
+
     return message;
   });
 
-  const provider = MODEL_LIST.find((model) => model.name === currentModel)?.provider || DEFAULT_PROVIDER;
+  const provider = getProviderForModel(currentModel) ?? slingshotConfig.default.provider;
 
   return _streamText({
-    model: getModel(provider, currentModel, env),
+    model: getModel(provider, currentModel, env) as LanguageModelV1,
     system: getSystemPrompt(),
     maxTokens: MAX_TOKENS,
-    // headers: {
-    //   'anthropic-beta': 'max-tokens-3-5-sonnet-2024-07-15',
-    // },
-    messages: convertToCoreMessages(processedMessages),
+    messages: convertToCoreMessages(processedMessages as any),
     ...options,
   });
 }
