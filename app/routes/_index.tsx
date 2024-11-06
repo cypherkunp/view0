@@ -3,6 +3,7 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { BaseChat } from '~/components/chat/BaseChat';
 import { Chat } from '~/components/chat/Chat.client';
 import { Header } from '~/components/header/Header';
+import slingshotConfig from '~/config/slingshot.config';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'Slingshot' }, { name: 'description', content: 'AI Code Assistant' }];
@@ -14,7 +15,18 @@ export default function Index() {
   return (
     <div className="flex flex-col h-full w-full">
       <Header />
-      <ClientOnly fallback={<BaseChat model="" setModel={() => {}} />}>{() => <Chat />}</ClientOnly>
+      <ClientOnly
+        fallback={
+          <BaseChat
+            model={slingshotConfig.default.model}
+            setModel={(m) => {
+              console.log(m);
+            }}
+          />
+        }
+      >
+        {() => <Chat />}
+      </ClientOnly>
     </div>
   );
 }

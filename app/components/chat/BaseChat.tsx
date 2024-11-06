@@ -14,14 +14,6 @@ import styles from './BaseChat.module.scss';
 import slingshotConfig from '~/config/slingshot.config';
 import { RenderIf } from '~/components/common/render-if';
 
-const EXAMPLE_PROMPTS = [
-  { text: 'Build a todo app in React using Tailwind' },
-  { text: 'Build a simple blog using Astro' },
-  { text: 'Create a cookie consent form using Material UI' },
-  { text: 'Make a space invaders game' },
-  { text: 'How do I center a div?' },
-];
-
 interface ModelSelectorProps {
   model: string;
   setModel: (model: string) => void;
@@ -29,10 +21,12 @@ interface ModelSelectorProps {
 
 const ModelSelector = ({ model, setModel }: ModelSelectorProps) => {
   const providerList = Object.keys(slingshotConfig.modelConfig);
+  const allowModelChange = slingshotConfig.features.allowModelSwitching;
+
   const [provider, setProvider] = useState<typeof slingshotConfig.default.provider>(slingshotConfig.default.provider);
 
   return (
-    <RenderIf condition={providerList.length > 1}>
+    <RenderIf condition={allowModelChange}>
       <div className="flex flex-col mb-2 space-y-2">
         <select
           value={provider}
@@ -185,7 +179,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                       minHeight: TEXTAREA_MIN_HEIGHT,
                       maxHeight: TEXTAREA_MAX_HEIGHT,
                     }}
-                    placeholder="How can Bolt help you today?"
+                    placeholder="How can Slingshot help you today?"
                     translate="no"
                   />
                   <ClientOnly>
@@ -242,7 +236,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
             {!chatStarted && (
               <div id="examples" className="relative w-full max-w-xl mx-auto mt-8 flex justify-center">
                 <div className="flex flex-col space-y-2 [mask-image:linear-gradient(to_bottom,black_0%,transparent_180%)] hover:[mask-image:none]">
-                  {EXAMPLE_PROMPTS.map((examplePrompt, index) => {
+                  {slingshotConfig.samplePrompts.map((examplePrompt, index) => {
                     return (
                       <button
                         key={index}
