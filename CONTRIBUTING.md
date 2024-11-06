@@ -3,6 +3,7 @@
 First off, thank you for considering contributing to Bolt.new! This fork aims to expand the capabilities of the original project by integrating multiple LLM providers and enhancing functionality. Every contribution helps make Bolt.new a better tool for developers worldwide.
 
 ## 📋 Table of Contents
+
 - [Code of Conduct](#code-of-conduct)
 - [How Can I Contribute?](#how-can-i-contribute)
 - [Pull Request Guidelines](#pull-request-guidelines)
@@ -18,29 +19,30 @@ This project and everyone participating in it is governed by our Code of Conduct
 ## How Can I Contribute?
 
 ### 🐞 Reporting Bugs and Feature Requests
+
 - Check the issue tracker to avoid duplicates
 - Use the issue templates when available
 - Include as much relevant information as possible
 - For bugs, add steps to reproduce the issue
 
 ### 🔧 Code Contributions
+
 1. Fork the repository
 2. Create a new branch for your feature/fix
 3. Write your code
 4. Submit a pull request
 
-### ✨ Becoming a Core Contributor
-We're looking for dedicated contributors to help maintain and grow this project. If you're interested in becoming a core contributor, please fill out our [Contributor Application Form](https://forms.gle/TBSteXSDCtBDwr5m7).
-
 ## Pull Request Guidelines
 
 ### 📝 PR Checklist
+
 - [ ] Branch from the main branch
 - [ ] Update documentation if needed
 - [ ] Manually verify all new functionality works as expected
 - [ ] Keep PRs focused and atomic
 
 ### 👀 Review Process
+
 1. Manually test the changes
 2. At least one maintainer review required
 3. Address all review comments
@@ -49,6 +51,7 @@ We're looking for dedicated contributors to help maintain and grow this project.
 ## Coding Standards
 
 ### 💻 General Guidelines
+
 - Follow existing code style
 - Comment complex logic
 - Keep functions focused and small
@@ -57,12 +60,15 @@ We're looking for dedicated contributors to help maintain and grow this project.
 ## Development Setup
 
 ### 🔄 Initial Setup
+
 1. Clone the repository:
+
 ```bash
-git clone https://github.com/coleam00/bolt.new-any-llm.git
+git clone https://github.com/devvrat-shukla/slingshot.git
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
@@ -70,19 +76,24 @@ pnpm install
 3. Set up environment variables:
    - Rename `.env.example` to `.env.local`
    - Add your LLM API keys (only set the ones you plan to use):
+
 ```bash
 GROQ_API_KEY=XXX
 OPENAI_API_KEY=XXX
 ANTHROPIC_API_KEY=XXX
 ...
 ```
-   - Optionally set debug level:
+
+- Optionally set debug level:
+
 ```bash
 VITE_LOG_LEVEL=debug
 ```
+
 **Important**: Never commit your `.env.local` file to version control. It's already included in .gitignore.
 
 ### 🚀 Running the Development Server
+
 ```bash
 pnpm run dev
 ```
@@ -189,6 +200,7 @@ The `docker-compose.yaml` configuration is compatible with VS Code dev container
 ## Environment Files
 
 Ensure you have the appropriate `.env.local` file configured before running the containers. This file should contain:
+
 - API keys
 - Environment-specific configurations
 - Other required environment variables
