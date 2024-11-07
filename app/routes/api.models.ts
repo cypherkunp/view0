@@ -1,6 +1,6 @@
 import { json } from '@remix-run/cloudflare';
-import { MODEL_LIST } from '~/utils/constants';
+import slingshotConfig from '~/config/slingshot.config';
 
 export async function loader() {
-  return json(MODEL_LIST);
+  return json(slingshotConfig.modelConfig);
 }
